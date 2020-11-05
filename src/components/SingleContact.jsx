@@ -57,7 +57,7 @@ function SingleContact({ conversation }) {
 
             <div className="avatar">
                 {
-                    User.status === "online" ? <StyledBadge
+                    User.status && User.status.current === "online" ? <StyledBadge
                         overlap="circle"
                         anchorOrigin={{
                             vertical: 'bottom',

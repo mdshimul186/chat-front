@@ -4,12 +4,18 @@ import axios from 'axios'
 import { useSelector ,useDispatch} from 'react-redux'
 import { socket } from '../App'
 import CallComp from './CallComp'
+import moment from 'moment'
 
 
 function MessageSection({ roomid }) {
 
   const [messages, setMessages] = useState([])
+  const [Members, setMembers] = useState([])
+  const [receiver, setreceiver] = useState({})
   const [text, settext] = useState('')
+
+const [isTyping, setisTyping] = useState(false)
+
   const { user,startreceivecall } = useSelector(state => state.auth)
 
   const [Call, setCall] = useState(false)
@@ -45,6 +51,13 @@ function MessageSection({ roomid }) {
     roomid && axios.get('/conversation/find/' + roomid)
       .then(res => {
         setMessages(res.data.messages);
+        setMembers(res.data.member)
+        res.data.member.map(m=>{
+          if(m._id !== user._id){
+            setreceiver(m)
+            console.log(m);
+          }
+        })
 
       })
   }, [roomid])
@@ -104,7 +117,57 @@ function MessageSection({ roomid }) {
         //setCaller(data.from);
         //setCallerSignal(data.signal);
       })
+
+      socket && socket.on("istyping",data=>{
+        setisTyping(data.istyping)
+      })
 }, [socket])
+
+
+
+useEffect(() => {
+  socket && socket.on("useronline",data=>{
+      
+      if(receiver._id === data._id){
+        setreceiver(data)
+      }
+      
+      
+  })
+
+  
+}, [receiver])
+
+var typing = false;
+var timeout = undefined;
+
+function timeoutFunction(){
+  typing = false;
+  socket.emit("typing",{to:roomid,istyping:false});
+  //console.log('typing stopped');
+}
+
+let handleKey = (e)=>{
+  
+ if(e.keyCode === 13){
+  handleSend()
+ }else{
+  if(typing == false) {
+    typing = true
+    //console.log('typing started');
+    socket.emit("typing",{to:roomid,istyping:true});
+    timeout = setTimeout(timeoutFunction, 5000);
+  } else {
+    clearTimeout(timeout);
+    timeout = setTimeout(timeoutFunction, 5000);
+  }
+ }
+}
+
+
+
+
+
 
   let messagessec
   messagessec = (<>
@@ -137,7 +200,7 @@ function MessageSection({ roomid }) {
       </div>
 
       <div className="input">
-        <input value={text} onChange={(e) => settext(e.target.value)} type="text" placeholder="Type something..."></input>
+        <input value={text} onKeyDown={(e)=>{ handleKey(e)}} onChange={(e)=>settext(e.target.value)} type="text" placeholder="Type something..."></input>
         <i onClick={() => handleSend()} className="far fa-paper-plane"></i>
       </div>
     </div></>
@@ -152,8 +215,9 @@ function MessageSection({ roomid }) {
           <Avatar alt="Remy Sharp" />
         </div>
         <div className="text">
-          <h6>User Name</h6>
-          <span>Last online 11 days ago</span>
+          <h6>{receiver && receiver.first} {receiver && receiver.last}</h6>
+          <span>{isTyping ? "Typing..." :receiver.status && receiver.status.current === 'online' ? "online" : receiver && moment(receiver.lastonline).fromNow()}</span>
+          
         </div>
         <div className="options">
           <span onClick={() => handleCall()}><i class="fas fa-video"></i></span>

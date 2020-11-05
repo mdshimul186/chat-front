@@ -35,7 +35,7 @@ function LayoutChat({children}) {
         }
         
     }, [history.location.pathname,breakpoint])
-   console.log(history.location.pathname.startsWith('/room'));
+   
 
 
     return (
