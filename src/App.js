@@ -111,8 +111,8 @@ function App() {
     <ToastMsg />
     <NavbarComp />
     <Switch>
-          <Route exact path="/" component={Home} />
-          <Route exact path="/room/:roomid" component={SingleRoom} />
+          <ProtectedRoute exact path="/" component={Home} />
+          <ProtectedRoute exact path="/room/:roomid" component={SingleRoom} />
           <Route path="/signin" component={SignIn}  />
           <Route path="/signup" component={SignUp}  />
           

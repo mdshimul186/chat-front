@@ -256,4 +256,8 @@ border-bottom: 1px solid #ccc;
   .message_input .input{
     width: 60%;
   }
+  .message_body {
+    height: 70vh;
+   
+  }
 }

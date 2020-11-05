@@ -59,6 +59,7 @@ function MessageSection({ roomid }) {
     axios.patch('/conversation/sendtext/' + roomid, newmessage)
       .then(res => {
         //setMessages(res.data.messages)
+        settext('')
 
       })
   }
