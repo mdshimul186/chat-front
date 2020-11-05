@@ -65,7 +65,7 @@ function App() {
         secure: true,
         rejectUnauthorized: false
       }
-      socket = io('http://localhost:5000', options)
+      socket = io('https://fbchat-back.herokuapp.com', options)
 
 
       socket.emit('come_online', loggedInSocket)
