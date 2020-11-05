@@ -73,6 +73,7 @@ function MessageSection({ roomid }) {
         if (data) {
 
           setMessages(previous => previous.concat(data[data.length - 1]))
+          settext('')
         }
       })
     }
