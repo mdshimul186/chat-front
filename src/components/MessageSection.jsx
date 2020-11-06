@@ -56,6 +56,7 @@ const [isTyping, setisTyping] = useState(false)
           if(m._id !== user._id){
             setreceiver(m)
             
+            
           }
         })
 
@@ -99,9 +100,9 @@ const [isTyping, setisTyping] = useState(false)
 
 
   
-  let handleCall = () => {
+  let handleCall = (calltype) => {
     setCall(true)
-    setActivity("videocall")
+    setActivity(calltype)
     
   }
 
@@ -113,7 +114,7 @@ const [isTyping, setisTyping] = useState(false)
       setCall(true)
       dispatch({
         type:"START_RECEIVE",
-        payload:{setReceivingCall:true,setCaller:data.from,setCallerSignal:data.signal}
+        payload:{setReceivingCall:true,setCaller:data.from,setCallerSignal:data.signal,activity:data.activity}
       })
         //setReceivingCall(true);
         //ringtoneSound.play();
@@ -131,7 +132,7 @@ const [isTyping, setisTyping] = useState(false)
 useEffect(() => {
   socket && receiver._id && socket.on("useronline",data=>{
       
-      if(receiver._id === data._id){
+      if(data && (receiver._id === data._id)){
         setreceiver(data)
       }
       
@@ -219,12 +220,12 @@ let handleKey = (e)=>{
         </div>
         <div className="text">
           <h6>{receiver && receiver.first} {receiver && receiver.last}</h6>
-          <span>{isTyping ? "Typing..." :receiver.status && receiver.status.current === 'online' ? "online" : receiver && moment(receiver.lastonline).fromNow()}</span>
+          <span>{isTyping ? "Typing..." :receiver.status && receiver.status.current === 'online' ? "online" : receiver && moment(receiver.status && receiver.status.lastonline).fromNow()}</span>
           
         </div>
         <div className="options">
-          <span onClick={() => handleCall()}><i class="fas fa-video"></i></span>
-          <span><i class="fas fa-phone"></i></span>
+          <span onClick={() => handleCall("videocall")}><i class="fas fa-video"></i></span>
+          <span onClick={() => handleCall("audiocall")}><i class="fas fa-phone"></i></span>
           <span><i class="far fa-star"></i></span>
           <span><i class="fas fa-ellipsis-h"></i></span>
 

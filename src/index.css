@@ -312,6 +312,7 @@ video.partnerVideo {
   text-align: center;
   line-height: 50px;
   border-radius: 50%;
+  cursor: pointer;
 }
 .call_control {
   position: absolute;

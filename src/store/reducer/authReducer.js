@@ -6,7 +6,8 @@ let init ={
     startreceivecall: {
         setReceivingCall:false,
         setCaller:null,
-        setCallerSignal:null
+        setCallerSignal:null,
+        activity:null
     },
     status:'offline',
     loading: false,
@@ -59,7 +60,8 @@ const authReducer = (state=init, action)=>{
                 startreceivecall:{
                     setReceivingCall:action.payload.setReceivingCall,
                     setCaller:action.payload.setCaller,
-                    setCallerSignal:action.payload.setCallerSignal
+                    setCallerSignal:action.payload.setCallerSignal,
+                    activity:action.payload.activity
                 }
             }
     

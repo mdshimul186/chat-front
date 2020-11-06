@@ -28,6 +28,7 @@ function CallComp({roomid,activity}) {
   const [videoMuted, setVideoMuted] = useState(false)
   const [isfullscreen, setFullscreen] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [Activity, setActivity] = useState(false)
 
 
 
@@ -47,6 +48,7 @@ useEffect(() => {
     setReceivingCall(true)
     setCaller(startreceivecall.setCaller);
     setCallerSignal(startreceivecall.setCallerSignal);
+    setActivity(startreceivecall.activity)
   }
 
 
@@ -64,17 +66,21 @@ useEffect(() => {
 }, [socket,startreceivecall])
 
  useEffect(() => {
-   if((activity==="videocall") && roomid){
-callPeer(roomid)
+   if(activity  && roomid){
+callPeer(roomid, activity)
    }
  }, [activity,roomid])
     
-    
+    useEffect(() => {
+     socket && socket.on('rejected', ()=>{
+      window.location.reload()
+    })
+    }, [socket])
 
 
-    function callPeer(id) {
+    function callPeer(id,activity) {
         if(id!==''){
-          navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
+          navigator.mediaDevices.getUserMedia({ video: activity === "videocall"? true:false, audio: true }).then(stream => {
             setStream(stream);
             setCallingFriend(true)
             setCaller(id)
@@ -87,15 +93,24 @@ callPeer(roomid)
           config: {
     
             iceServers: [
+                // {
+                //     urls: "stun:numb.viagenie.ca",
+                //     username: "sultan1640@gmail.com",
+                //     credential: "98376683"
+                // },
+                // {
+                //     urls: "turn:numb.viagenie.ca",
+                //     username: "sultan1640@gmail.com",
+                //     credential: "98376683"
+                // }
+
                 {
-                    urls: "stun:numb.viagenie.ca",
-                    username: "sultan1640@gmail.com",
-                    credential: "98376683"
+                  urls: "stun:stun.stunprotocol.org",
                 },
                 {
-                    urls: "turn:numb.viagenie.ca",
-                    username: "sultan1640@gmail.com",
-                    credential: "98376683"
+                  urls: "turn:numb.viagenie.ca",
+                  credential: "muazkh",
+                  username: "webrtc@live.com",
                 }
             ]
         },
@@ -105,7 +120,7 @@ callPeer(roomid)
             myPeer.current=peer;
         
             peer.on("signal", data => {
-              socket.emit("callUser", { userToCall: id, signalData: data, from: user })
+              socket.emit("callUser", { userToCall: id, signalData: data, from: user,activity:activity })
             })
         
             peer.on("stream", stream => {
@@ -115,7 +130,7 @@ callPeer(roomid)
             });
     
             peer.on('error', (err)=>{
-              //endCall()
+              endCall()
             })
         
             socket.on("callAccepted", signal => {
@@ -143,13 +158,13 @@ callPeer(roomid)
       }
     
 
-      function acceptCall() {
+      function acceptCall(Activity) {
         dispatch({
           type:"START_RECEIVE",
-          payload:{setReceivingCall:false,setCaller:null,setCallerSignal:null}
+          payload:{setReceivingCall:false,setCaller:null,setCallerSignal:null,activity:null}
         })
         //ringtoneSound.unload();
-        navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
+        navigator.mediaDevices.getUserMedia({ video: Activity === 'videocall' ? true:false, audio: true }).then(stream => {
            
           setStream(stream);
           if (userVideo.current) {
@@ -178,7 +193,7 @@ callPeer(roomid)
     
           peer.signal(callerSignal);
     
-          socket.current.on('close', ()=>{
+          socket.on('close', ()=>{
             window.location.reload()
           })
         })
@@ -191,14 +206,29 @@ callPeer(roomid)
       function rejectCall(){
         //ringtoneSound.unload();
         setCallRejected(true)
-        socket.emit('rejected', {to:caller})
+        socket.emit('rejected', {to:roomid})
         window.location.reload()
       }
     
       function endCall(){
         myPeer.current.destroy()
-        socket.emit('close',{to:caller})
+        socket.emit('close',{to:roomid})
         window.location.reload()
+      }
+
+
+      function toggleMuteVideo(){
+        if(stream){
+          setVideoMuted(!videoMuted)
+          stream.getVideoTracks()[0].enabled = videoMuted
+        }
+      }
+
+      function toggleMuteAudio(){
+        if(stream){
+          setAudioMuted(!audioMuted)
+          stream.getAudioTracks()[0].enabled = audioMuted
+        }
       }
     
    
@@ -214,7 +244,7 @@ callPeer(roomid)
             <div className="incomingCall flex flex-column">
               <div><span className="callerID">{caller && caller.first} {caller && caller.last}</span> is calling you!</div>
               <div className="incomingCallButtons flex">
-              <button name="accept" className="alertButtonPrimary" onClick={()=>acceptCall()}>Accept</button>
+              <button name="accept" className="alertButtonPrimary" onClick={()=>acceptCall(Activity)}>Accept</button>
               <button name="reject" className="alertButtonSecondary" onClick={()=>rejectCall()}>Reject</button>
               </div>
             </div>
@@ -242,7 +272,21 @@ callPeer(roomid)
   }
 
 
-
+  let callcontrol
+  callcontrol = (
+<div className="call_control">
+{
+  callAccepted && <>
+  <span onClick={()=>toggleMuteAudio()}>{audioMuted ? <i class="fas fa-microphone-slash"></i>:<i class="fas fa-microphone"></i>}</span>
+              <span onClick={()=>toggleMuteVideo()}>{videoMuted ? <i class="fas fa-video-slash"></i> :<i class="fas fa-video"></i> }</span>
+  </>
+}
+              
+              <span onClick={()=>{
+                callAccepted ? endCall() : rejectCall()
+              }}><i class="fas fa-phone-slash"></i></span>
+            </div>
+  )
 
 
 
@@ -255,11 +299,7 @@ callPeer(roomid)
             { UserVideo}
             {incomingCall}
             {PartnerVideo}
-            <div className="call_control">
-              <span><i class="fas fa-microphone"></i></span>
-              <span><i class="fas fa-video"></i></span>
-              <span><i class="fas fa-phone-slash"></i></span>
-            </div>
+            {callcontrol}
 
             </div>
         </>
