@@ -55,7 +55,7 @@ const [isTyping, setisTyping] = useState(false)
         res.data.member.map(m=>{
           if(m._id !== user._id){
             setreceiver(m)
-            console.log(m);
+            
           }
         })
 
@@ -71,6 +71,7 @@ const [isTyping, setisTyping] = useState(false)
     }
     axios.patch('/conversation/sendtext/' + roomid, newmessage)
       .then(res => {
+        setMessages(previous => previous.concat(res.data.messages[res.data.messages.length - 1]))
         //setMessages(res.data.messages)
         settext('')
 
@@ -84,9 +85,11 @@ const [isTyping, setisTyping] = useState(false)
 
       socket.on('newconversation', data => {
         if (data) {
+          if(data[data.length - 1].sender !== user._id){
+            setMessages(previous => previous.concat(data[data.length - 1]))
 
-          setMessages(previous => previous.concat(data[data.length - 1]))
-          settext('')
+          }
+          
         }
       })
     }
@@ -126,7 +129,7 @@ const [isTyping, setisTyping] = useState(false)
 
 
 useEffect(() => {
-  socket && socket.on("useronline",data=>{
+  socket && receiver._id && socket.on("useronline",data=>{
       
       if(receiver._id === data._id){
         setreceiver(data)
@@ -180,7 +183,7 @@ let handleKey = (e)=>{
           return <div key={index} ref={lastmessage ? lastmsgref : null} className={user && user._id === msg.sender ? "msg" : "msgleft"}>
             <div className="text">
               <p>{msg.body}</p>
-              <span>Oct 18 - 10:32 PM</span>
+              <span>{moment(msg.date).format("MMM D - hh:mm A")}</span>
             </div>
             <div className="msg_avatar">
               <Avatar alt="Remy Sharp" />

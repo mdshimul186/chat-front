@@ -16,7 +16,7 @@ function CallComp({roomid,activity}) {
   const [users, setUsers] = useState({});
   const [stream, setStream] = useState();
   const [receivingCall, setReceivingCall] = useState(false);
-  const [caller, setCaller] = useState("");
+  const [caller, setCaller] = useState({});
   const [callingFriend, setCallingFriend] = useState(false);
   const [callerSignal, setCallerSignal] = useState();
   const [callAccepted, setCallAccepted] = useState(false);
@@ -105,7 +105,7 @@ callPeer(roomid)
             myPeer.current=peer;
         
             peer.on("signal", data => {
-              socket.emit("callUser", { userToCall: id, signalData: data, from: user._id })
+              socket.emit("callUser", { userToCall: id, signalData: data, from: user })
             })
         
             peer.on("stream", stream => {
@@ -165,7 +165,7 @@ callPeer(roomid)
           myPeer.current=peer
     
           peer.on("signal", data => {
-            socket.emit("acceptCall", { signal: data, to: caller })
+            socket.emit("acceptCall", { signal: data, to: caller._id })
           })
     
           peer.on("stream", stream => {
@@ -212,7 +212,7 @@ callPeer(roomid)
         incomingCall = (
           <div className="incomingCallContainer">
             <div className="incomingCall flex flex-column">
-              <div><span className="callerID">{caller}</span> is calling you!</div>
+              <div><span className="callerID">{caller && caller.first} {caller && caller.last}</span> is calling you!</div>
               <div className="incomingCallButtons flex">
               <button name="accept" className="alertButtonPrimary" onClick={()=>acceptCall()}>Accept</button>
               <button name="reject" className="alertButtonSecondary" onClick={()=>rejectCall()}>Reject</button>
@@ -226,13 +226,20 @@ callPeer(roomid)
       let PartnerVideo;
       if (callAccepted && isfullscreen) {
         PartnerVideo = (
-          <video style={{height:"300px",width:"48%"}} className="partnerVideo cover" playsInline ref={partnerVideo} autoPlay />
+          <video  className="partnerVideo cover" playsInline ref={partnerVideo} autoPlay />
         );
       } else if (callAccepted && !isfullscreen){
         PartnerVideo = (
-          <video style={{height:"300px",width:"48%"}} className="partnerVideo" playsInline ref={partnerVideo} autoPlay />
+          <video  className="partnerVideo" playsInline ref={partnerVideo} autoPlay />
         );
       }
+
+      let UserVideo;
+  if (stream) {
+    UserVideo = (
+      <video className="userVideo" playsInline muted ref={userVideo} autoPlay />
+    );
+  }
 
 
 
@@ -243,11 +250,17 @@ callPeer(roomid)
     return (
         <>
           
-{/* <button onClick={()=>callPeer(roomid)}>Call</button> */}
-             <div style={{display:"flex",flexWrap:"nowrap"}}>
-            <video style={{height:"300px",width:"48%",marginRight:"10px"}} className="userVideo" playsInline muted ref={userVideo} autoPlay />
+
+             <div className="video_container" >
+            { UserVideo}
             {incomingCall}
             {PartnerVideo}
+            <div className="call_control">
+              <span><i class="fas fa-microphone"></i></span>
+              <span><i class="fas fa-video"></i></span>
+              <span><i class="fas fa-phone-slash"></i></span>
+            </div>
+
             </div>
         </>
     )

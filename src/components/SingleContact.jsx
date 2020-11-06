@@ -3,6 +3,7 @@ import Badge from '@material-ui/core/Badge';
 import Avatar from '@material-ui/core/Avatar';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import {useSelector} from 'react-redux'
+import moment from 'moment'
 
 
 const StyledBadge = withStyles((theme) => ({
@@ -73,11 +74,13 @@ function SingleContact({ conversation }) {
             </div>
             <div className="text">
                 <h6>{User.first} {User.last}</h6>
-                <span>{lastMsg && lastMsg.body}</span>
+                <span>{user._id == lastMsg.sender ? "You:" : <>{User.first} {User.last}:</>} {lastMsg && lastMsg.body}</span>
             </div>
             <div className="time">
-                <span>Oct 8</span>
-                <span>10:32 am</span>
+            
+            
+                <span>{lastMsg && moment(lastMsg.date).format("MMM D")}</span>
+                <span>{lastMsg && moment(lastMsg.date).format("hh:mm A")}</span>
             </div>
         </>
     )
