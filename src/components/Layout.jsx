@@ -3,6 +3,7 @@ import axios from 'axios'
 import {useHistory} from 'react-router-dom'
 import TabsSection from './TabsSection'
 import {socket} from '../App'
+import {useDispatch} from 'react-redux'
 
 import { createBreakpoint } from "react-use";
 
@@ -11,6 +12,7 @@ const useBreakpoint = createBreakpoint();
 function LayoutChat({children}) {
     let history = useHistory()
     const breakpoint = useBreakpoint();
+    const dispatch = useDispatch()
 
     const [TabShow, setTabShow] = useState(true)
     const [MesageShow, setMesageShow] = useState(false)
@@ -35,6 +37,22 @@ function LayoutChat({children}) {
         }
         
     }, [history.location.pathname,breakpoint])
+
+
+    useEffect(() => {
+        socket && socket.on("hey", (data) => {
+            //alert("receivinfg")
+            //setCall(true)
+            dispatch({
+              type:"START_RECEIVE",
+              payload:{setReceivingCall:true,setCaller:data.from,setCallerSignal:data.signal,activity:data.activity}
+            })
+              //setReceivingCall(true);
+              //ringtoneSound.play();
+              //setCaller(data.from);
+              //setCallerSignal(data.signal);
+            })
+    }, [socket])
    
 
 

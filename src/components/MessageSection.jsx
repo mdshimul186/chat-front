@@ -5,6 +5,7 @@ import { useSelector ,useDispatch} from 'react-redux'
 import { socket } from '../App'
 import CallComp from './CallComp'
 import moment from 'moment'
+import {setToast} from './ToastMsg'
 
 
 function MessageSection({ roomid }) {
@@ -22,15 +23,15 @@ const [isTyping, setisTyping] = useState(false)
   const [activity, setActivity] = useState("")
   let dispatch = useDispatch()
 
- // useEffect(() => {
-    //socket && socket.on("hey", (data) => {
-      //setCall(true)
-      //setReceivingCall(true);
-      //ringtoneSound.play();
-      //setCaller(data.from);
-      //setCallerSignal(data.signal);
-   // })
-  //}, [socket])
+  useEffect(() => {
+    if(startreceivecall && startreceivecall.setReceivingCall === true){
+        
+      if(startreceivecall.setCaller._id === receiver._id){
+          
+          setCall(true)
+      }
+  }
+  })
 
 
   let lastmsgref = useRef()
@@ -77,6 +78,9 @@ const [isTyping, setisTyping] = useState(false)
         settext('')
 
       })
+      .catch(err=>{
+        //err.response.data
+      })
   }
 
 
@@ -101,8 +105,13 @@ const [isTyping, setisTyping] = useState(false)
 
   
   let handleCall = (calltype) => {
-    setCall(true)
-    setActivity(calltype)
+    if(receiver && receiver.status.current === "online"){
+      setCall(true)
+      setActivity(calltype)
+    }else{
+      setToast("User is offline","warning")
+    }
+    
     
   }
 
@@ -110,17 +119,7 @@ const [isTyping, setisTyping] = useState(false)
 
 
   useEffect(() => {
-    socket && socket.on("hey", (data) => {
-      setCall(true)
-      dispatch({
-        type:"START_RECEIVE",
-        payload:{setReceivingCall:true,setCaller:data.from,setCallerSignal:data.signal,activity:data.activity}
-      })
-        //setReceivingCall(true);
-        //ringtoneSound.play();
-        //setCaller(data.from);
-        //setCallerSignal(data.signal);
-      })
+    
 
       socket && socket.on("istyping",data=>{
         setisTyping(data.istyping)
@@ -234,7 +233,7 @@ let handleKey = (e)=>{
       
 
       {
-        Call ? <CallComp activity={activity} roomid={roomid} /> : messagessec
+        Call ? <CallComp activity={activity} roomid={roomid} receiver={receiver} /> : messagessec
       }
 
 

@@ -40,7 +40,7 @@ function SingleContact({ conversation }) {
     const [User, setUser] = useState({})
     const [lastMsg, setlastMsg] = useState({})
 
-    const {user} = useSelector(state => state.auth)
+    const {user,startreceivecall} = useSelector(state => state.auth)
 
     useEffect(() => {
         conversation && conversation.member.map(m=>{
@@ -53,6 +53,16 @@ function SingleContact({ conversation }) {
 
        
     }, [conversation])
+
+    useEffect(() => {
+       if(startreceivecall && startreceivecall.setReceivingCall){
+        
+           if(startreceivecall.setCaller._id === User._id){
+               
+               setlastMsg({...lastMsg,body:"calling"})
+           }
+       }
+    }, [startreceivecall])
     return (
         <>
 
@@ -74,7 +84,11 @@ function SingleContact({ conversation }) {
             </div>
             <div className="text">
                 <h6>{User.first} {User.last}</h6>
+                {
+                    lastMsg && lastMsg.body === 'calling' ? <span>calling</span>:
                 <span>{user._id == lastMsg.sender ? "You:" : <>{User.first} {User.last}:</>} {lastMsg && lastMsg.body}</span>
+
+                }
             </div>
             <div className="time">
             

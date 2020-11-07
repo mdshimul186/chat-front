@@ -330,6 +330,22 @@ i.fas.fa-phone-slash {
   color: red;
 }
 
+.calling_container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.calling_container h5 {
+  font-size: 31px;
+  text-transform: capitalize;
+  color: #505050;
+}
+
+
 
 
 

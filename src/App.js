@@ -29,6 +29,7 @@ axios.defaults.baseURL = 'https://fbchat-back.herokuapp.com'
 //axios.defaults.baseURL = 'http://localhost:5000'
 
 
+
 if(token){
   
   let decoded = jwt(token)
@@ -65,6 +66,7 @@ function App() {
         secure: true,
         rejectUnauthorized: false
       }
+
       socket = io('https://fbchat-back.herokuapp.com', options)
 
 

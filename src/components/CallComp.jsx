@@ -7,7 +7,7 @@ import {useSelector,useDispatch} from 'react-redux'
 import {socket} from '../App'
 import Peer from "simple-peer";
 
-function CallComp({roomid,activity}) {
+function CallComp({roomid,activity,receiver}) {
     
    
     const {user,startreceivecall} = useSelector(state => state.auth)
@@ -66,10 +66,10 @@ useEffect(() => {
 }, [socket,startreceivecall])
 
  useEffect(() => {
-   if(activity  && roomid){
-callPeer(roomid, activity)
+   if(activity  && receiver){
+callPeer(receiver._id, activity)
    }
- }, [activity,roomid])
+ }, [activity,receiver])
     
     useEffect(() => {
      socket && socket.on('rejected', ()=>{
@@ -135,6 +135,7 @@ callPeer(roomid, activity)
         
             socket.on("callAccepted", signal => {
               setCallAccepted(true);
+              setCallingFriend(false)
               peer.signal(signal);
             })
     
@@ -149,6 +150,7 @@ callPeer(roomid, activity)
           .catch(()=>{
            // setModalMessage('You cannot place/ receive a call without granting video and audio permissions! Please change your settings to use Cuckoo.')
             //setModalVisible(true)
+            window.location.reload()
           })
         } else {
           //setModalMessage('We think the username entered is wrong. Please check again and retry!')
@@ -278,7 +280,10 @@ callPeer(roomid, activity)
 {
   callAccepted && <>
   <span onClick={()=>toggleMuteAudio()}>{audioMuted ? <i class="fas fa-microphone-slash"></i>:<i class="fas fa-microphone"></i>}</span>
-              <span onClick={()=>toggleMuteVideo()}>{videoMuted ? <i class="fas fa-video-slash"></i> :<i class="fas fa-video"></i> }</span>
+  {
+    activity === 'audiocall' ? null :Activity === 'audiocall' ? null :  <span onClick={()=>toggleMuteVideo()}>{videoMuted ? <i class="fas fa-video-slash"></i> :<i class="fas fa-video"></i> }</span>
+
+  }
   </>
 }
               
@@ -286,6 +291,13 @@ callPeer(roomid, activity)
                 callAccepted ? endCall() : rejectCall()
               }}><i class="fas fa-phone-slash"></i></span>
             </div>
+  )
+
+  let callingfriend
+  callingfriend = (
+    <div className='calling_container'>
+      <h5>calling....</h5>
+    </div>
   )
 
 
@@ -297,6 +309,7 @@ callPeer(roomid, activity)
 
              <div className="video_container" >
             { UserVideo}
+            {callingFriend &&  callingfriend}
             {incomingCall}
             {PartnerVideo}
             {callcontrol}
