@@ -9,7 +9,7 @@ function NavbarComp() {
 
   let logout=()=>{
     
-    localStorage.removeItem("chat_key")
+    localStorage.removeItem("chat_key_token")
     window.location.pathname = "/"
   }
   return (

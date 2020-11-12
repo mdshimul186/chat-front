@@ -24,7 +24,7 @@ import { useSelector, useDispatch } from "react-redux"
 
 
 
-let token = localStorage.getItem('chat_key')
+let token = localStorage.getItem('chat_key_token')
 axios.defaults.baseURL = 'https://fbchat-back.herokuapp.com'
 //axios.defaults.baseURL = 'http://localhost:5000'
 

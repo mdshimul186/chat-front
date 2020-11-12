@@ -61,7 +61,7 @@ export default function SignIn() {
     axios.post('/user/signin', user)
     .then(res=>{
      if(res.status === 200){
-      localStorage.setItem('chat_key', res.data.token)
+      localStorage.setItem('chat_key_token', res.data.token)
       dispatch({type:"SET_USER", payload: res.data.user})
       setToast("Signin success","success")
       setload(false)

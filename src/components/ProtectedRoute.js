@@ -8,7 +8,7 @@
      <Route {...rest} render={(props) => (
          authenticated === true
            ? <Component {...props} />
-           : <Redirect to='/signin' />
+           : <Redirect to='/signup' />
        )} />
      )
  }
