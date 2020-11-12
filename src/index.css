@@ -24,7 +24,7 @@ button:focus {
   box-sizing: border-box;
 }
 body{
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 /* tabs section */
@@ -47,6 +47,10 @@ border-bottom: 1px solid #ccc;
   justify-content: center;
   align-items: center;
   cursor: pointer;
+}
+.tab_head .active {
+  color: #0062cc;
+  font-weight: bold;
 }
 
 .tab_head .tab_head_group span {
@@ -144,13 +148,20 @@ border-bottom: 1px solid #ccc;
   background: white;
   width: 100%;
 }
+
+.picker{
+
+    position: absolute;
+    bottom: 53px;
+}
+
 .message_icon i {
   padding: 10px 10px;
   font-size: 21px;
   color: #666;
 }
 .message_input .input{
-  width: 80%;
+  width: 85%;
 }
 .message_input .input input {
   width: 82%;
@@ -158,6 +169,8 @@ border-bottom: 1px solid #ccc;
   border-radius: 5px;
   height: 36px;
   border: 1px solid #ccc;
+  margin-left: 10px;
+  padding: 0 10px;
   
 }
 .message_input .input input:focus{
@@ -167,6 +180,12 @@ border-bottom: 1px solid #ccc;
   padding: 10px 10px;
   font-size: 21px;
   color: #666;
+}
+
+.message_icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 /* single message */
@@ -355,10 +374,22 @@ i.fas.fa-phone-slash {
     
   }
   .message_input .input{
-    width: 60%;
+    width: 70%;
+  }
+  .message_input .input input{
+    width: 80%;
   }
   .message_body {
     height: 70vh;
    
   }
+}
+
+@media only screen and (max-width:400px){
+  
+
+  .message_input .input input{
+    width: 75%;
+  }
+  
 }

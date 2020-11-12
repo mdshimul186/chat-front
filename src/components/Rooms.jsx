@@ -6,9 +6,11 @@ import {socket} from '../App.js'
 import {useSelector} from 'react-redux'
 import axios from 'axios'
 import Alert from '@material-ui/lab/Alert';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 function Rooms() {
     const [users, setUsers] = useState([])
+    const [Loading, setLoading] = useState(false)
     
   
 
@@ -16,10 +18,11 @@ function Rooms() {
 
     const [conversations, setConversations] = useState([])
     useEffect(() => {
+        setLoading(true)
         axios.get('/conversation/getall')
         .then(res=>{
             setConversations(res.data.conversations)
-            
+            setLoading(false)
         })
     }, [])
 
@@ -100,11 +103,13 @@ function Rooms() {
     return (
         <>
             {
-                conversations && conversations.map((con,index)=>{
-                        return <div key={index} onClick={()=>handlePush(con)} className="contact_list">
+                Loading ? <span style={{textAlign:"center",display:"block",marginTop:"10px"}}><CircularProgress size={25} /></span> :
+                conversations && conversations.length >0 ? conversations.map((con,index)=>{
+                        return <div key={index} onClick={()=>handlePush(con)} className="contact_list" style={{cursor:"pointer"}}>
                     <SingleContact conversation={con}/>
                 </div>
-                    })
+                    }):
+                    <p style={{textAlign:"center"}}>No conversations found!search user and start new conversation</p>
                 }
         </>
     )

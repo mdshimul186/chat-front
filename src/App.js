@@ -66,7 +66,7 @@ function App() {
         secure: true,
         rejectUnauthorized: false
       }
-
+      
       socket = io('https://fbchat-back.herokuapp.com', options)
 
 

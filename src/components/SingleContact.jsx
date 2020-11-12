@@ -48,8 +48,10 @@ function SingleContact({ conversation }) {
                 setUser(m)
             }
         })
-       
-        setlastMsg(conversation && conversation.messages[conversation.messages.length - 1])
+       if(conversation.messages.length>0){
+           setlastMsg(conversation && conversation.messages[conversation.messages.length - 1])
+
+       }
 
        
     }, [conversation])
@@ -63,6 +65,17 @@ function SingleContact({ conversation }) {
            }
        }
     }, [startreceivecall])
+
+    let last
+    last = (
+<>
+{
+                    lastMsg && lastMsg.body === 'calling' ? <span>calling</span>:
+                <span>{lastMsg && user._id ==  lastMsg.sender ? "You:" : <>{User.first} {User.last}:</>} {lastMsg &&  lastMsg.type==='image' ?'image':lastMsg.body}</span>
+
+                }
+</>
+    )
     return (
         <>
 
@@ -76,19 +89,15 @@ function SingleContact({ conversation }) {
                         }}
                         variant="dot"
                     >
-                        <Avatar alt="Remy Sharp"  />
+                        <Avatar src={User.profileimg}  />
                     </StyledBadge> :
-                        <Avatar alt="Remy Sharp" />
+                        <Avatar src={User.profileimg} />
 
                 }
             </div>
             <div className="text">
                 <h6>{User.first} {User.last}</h6>
-                {
-                    lastMsg && lastMsg.body === 'calling' ? <span>calling</span>:
-                <span>{user._id == lastMsg.sender ? "You:" : <>{User.first} {User.last}:</>} {lastMsg && lastMsg.body}</span>
-
-                }
+                {lastMsg && last} 
             </div>
             <div className="time">
             

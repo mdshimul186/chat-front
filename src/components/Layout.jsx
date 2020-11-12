@@ -41,6 +41,7 @@ function LayoutChat({children}) {
 
     useEffect(() => {
         socket && socket.on("hey", (data) => {
+            console.log('hey');
             //alert("receivinfg")
             //setCall(true)
             dispatch({
@@ -74,7 +75,11 @@ function LayoutChat({children}) {
 
             {
                 SidebarShow && <div className='col-lg-3 col-sm-12'>
-                    sidebar
+                    <div style={{height:"80vh",display:"flex",justifyContent:"center",alignItems:"center",flexDirection:"column"}}>
+                    <h5>Chat app</h5>
+                    <p>Design and developed by <a target="_blank" href="https://fb.com/shimul186">SHIMUL</a></p>
+                    <h6>Version : 1.0(beta)</h6>
+                    </div>
                 </div>
             }
                 

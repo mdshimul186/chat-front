@@ -43,8 +43,7 @@ function SingleUser({ user }) {
     
     return (
         <>
-
-            <div className="avatar">
+            <div className="avatar" >
                 {
                     user.status === "online" ? <StyledBadge
                         overlap="circle"
@@ -54,9 +53,9 @@ function SingleUser({ user }) {
                         }}
                         variant="dot"
                     >
-                        <Avatar alt="Remy Sharp"  />
+                        <Avatar src={user.profileimg}  />
                     </StyledBadge> :
-                        <Avatar alt="Remy Sharp" />
+                        <Avatar src={user.profileimg} />
 
                 }
             </div>
